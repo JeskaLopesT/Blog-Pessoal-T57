@@ -19,60 +19,57 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.generation.blogpessoal.model.Postagem;
-import com.generation.blogpessoal.repository.PostagemRepository;
 
+import com.generation.blogpessoal.model.Tema;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 @RestController
-@RequestMapping("/postagens")
-public class PostagemController{
-
-	@Autowired
-	private PostagemRepository repository;
+@RequestMapping("/temas")
+public class TemaController {
 	
-	// SELECT * FROM tb_postagem;
+	@Autowired
+	private TemaRepository temaRepository;
+
 	@GetMapping
-	public ResponseEntity<List<Postagem>> moranguete(){
-		return ResponseEntity.ok(repository.findAll());
+	public ResponseEntity<List<Tema>> moranguete(){
+		return ResponseEntity.ok(temaRepository.findAll());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Postagem> getById(@PathVariable Long id){
-		return repository.findById(id)
+	public ResponseEntity<Tema> getById(@PathVariable Long id){
+		return temaRepository.findById(id)
 				.map(resp -> ResponseEntity.ok(resp))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
-	@GetMapping("/titulo/{titulo}")
-	public ResponseEntity<List<Postagem>>getPorTitulo(@PathVariable String titulo){
-		return ResponseEntity.ok(repository.findAllByTituloContainingIgnoreCase(titulo));
+	@GetMapping("/descricao/{descricao}")
+	public ResponseEntity<List<Tema>>getPorTitulo(@PathVariable String descricao){
+		return ResponseEntity.ok(temaRepository.findAllByDescricaoContainingIgnoreCase(descricao));
 	}
 	
-	// insert into tb_postagens (titulo, texto) VALUES ("titulo","texto")
 	@PostMapping
-	public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem) {
+	public ResponseEntity<Tema> post(@Valid @RequestBody Tema tema) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(repository.save(postagem));
+				.body(temaRepository.save(tema));
 	}
 	
-	// UPDATE tb_postagens SET titulo="titulo", texto="texto" WHERE id=1
 	@PutMapping
-	public ResponseEntity<Postagem> atualizarPostagem(@Valid @RequestBody Postagem postagem){
-		return repository.findById(postagem.getId())
+	public ResponseEntity<Tema> batata(@Valid @RequestBody Tema tema){
+		return temaRepository.findById(tema.getId())
 				.map(resposta -> ResponseEntity.status(HttpStatus.OK)
-				.body(repository.save(postagem)))
+				.body(temaRepository.save(tema)))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
-	// DELETE from tb_postagens WHERE id=1
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
-		Optional<Postagem> postagem = repository.findById(id);
+		Optional<Tema> tema = temaRepository.findById(id);
 		
-		if(postagem.isEmpty())
+		if(tema.isEmpty())
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		
-		repository.deleteById(id);				
+		temaRepository.deleteById(id);				
 	}
+
 }
